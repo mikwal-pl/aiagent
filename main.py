@@ -6,7 +6,7 @@ from google.genai import types
 
 prompt_given = False
 for x in sys.argv[1:]:
-    if x.startswith("--"):
+    if not x.startswith("--"):
         prompt_given = True
         prompt = x
 if prompt_given == False:
@@ -25,10 +25,12 @@ def main():
     print("Hello from aiagent!")
     print("\n")
     response = client.models.generate_content(model="gemini-2.0-flash-001", contents=messages)
+    if response.usage_metadata == None:
+        raise RuntimeError("Error: An API request likely failed. Please try again in a moment")
     if "--verbose" in sys.argv:
         print(f"User prompt: {prompt}")
         print("\n")
-    print(response.text)
+    print(f"Agent response: {response.text}")
     if "--verbose" in sys.argv:
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
